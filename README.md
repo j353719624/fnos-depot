@@ -69,4 +69,10 @@ git add -A && git commit -m "chore: release hello-world 1.0.0" && git push
 ## 应用列表
 
 <!-- APPS-TABLE-START -->
+
+以下根据 `fnpack.json` 自动生成（命令：`py scripts/depot.py gen-readme`，CI 会在每次推送后自动刷新）：
+
+共 **0** 个应用。
+
+
 <!-- APPS-TABLE-END -->
