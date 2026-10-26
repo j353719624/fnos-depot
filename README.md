@@ -1,8 +1,8 @@
 # fnos-depot — 飞牛 OS 应用源
 
-飞牛 OS（fnOS）**外部应用源**仓库，索引格式与社区主流源一致（`fnpack.json` schema v2），支持 x86 / arm 双版本。
+飞牛 OS（fnOS）**外部应用源**仓库，索引文件为 `fnpack.json`（schema v2），支持 x86 / arm 双版本。
 
-> 结构参考 [shuangji66/FnDepot](https://github.com/shuangji66/FnDepot)：仓库只放元数据和展示图片，fpk 安装包托管在 GitHub Releases，更新用脚本和 CI 自动维护。
+仓库只放元数据和展示图片，fpk 安装包托管在 GitHub Releases，更新用脚本和 CI 自动维护。
 
 ## 目录结构
 
