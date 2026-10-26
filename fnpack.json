@@ -39,6 +39,73 @@
       "install_type": "root",
       "maintainer": "Lunn",
       "maintainer_url": "https://github.com/j353719624/mercury-fnos"
+    },
+    "trim.openclaw": {
+      "display_name": "飞牛 OpenClaw",
+      "desc": "飞牛 OpenClaw 社区构建版是面向 fnOS 系统打造的一体化 AI 助手管理平台,提供 OpenClaw 服务的原生集成与统一控制入口,支持模型接入、服务管理及消息渠道配置等核心能力,帮助用户高效构建与管理 AI 应用。 用户可在应用内灵活接入云端大模型 API 或部署本地模型(如 Ollama),并结合其文件读写、数据调用与任务执行能力,实现自动化处理与智能化工作流,同时通过官方 API 可无缝对接钉钉、飞书、企业微信等主流办公平台,打通内外部协作场景。 在安全层面,系统采用独立用户运行机制,默认隔离敏感目录,仅在授权范围内进行操作,并预设提示词防护,但依然存在权限范围内的文件修改或删除行为,建议您提前做好数据备份。",
+      "platform": [
+        "x86"
+      ],
+      "categories": [
+        "AI赋能"
+      ],
+      "icon_url": "trim.openclaw/ICON.PNG",
+      "preview_urls": [
+        "trim.openclaw/Preview/1.png"
+      ],
+      "readme_url": "trim.openclaw/README.md",
+      "releases": {
+        "0.2.1": {
+          "changelog": "社区构建版:wrapper 兼容性修复(进程识别/插件钉版本/XFF/白页)+ OpenClaw 核心版本 2026.9.4 + root 运行自愈。root 变体,自带 node 26.10.0 + bun 1.4.2,零依赖离线可用。",
+          "updated_at": "2026-10-26T22:33:50Z",
+          "packages": {
+            "x86": {
+              "download_url": "https://github.com/j353719624/openclaw-fnos/releases/download/v0.2.1/trim.openclaw_0.2.1_root_x86_64.fpk",
+              "sha256": "ba5cfee78693bf4f5cd5e45d557cfcf7b1c7a8e7934ae9b677762299a2658e81",
+              "size": 101399422
+            }
+          },
+          "os_min_version": "1.1.3107"
+        }
+      },
+      "run_as": "root",
+      "install_type": "root",
+      "maintainer": "飞牛",
+      "maintainer_url": "https://github.com/j353719624/openclaw-fnos"
+    },
+    "trim.docs.wps.universal": {
+      "display_name": "Office文档 WPS 通用版",
+      "desc": "Office文档 WPS 通用版：自带 WPS GUI、VNC/noVNC 运行组件，自动适配 fnOS x86_64 用户、存储卷和端口。",
+      "platform": [
+        "x86"
+      ],
+      "categories": [
+        "系统工具"
+      ],
+      "icon_url": "trim.docs.wps.universal/ICON.PNG",
+      "preview_urls": [
+        "trim.docs.wps.universal/Preview/1.png"
+      ],
+      "readme_url": "trim.docs.wps.universal/README.md",
+      "releases": {
+        "0.2.5": {
+          "changelog": "1.自动适配非 root 用户、用户组和存储卷；2.VNC/noVNC/xwininfo 全部内置，不依赖宿主 gio；3.端口冲突自动递增；4.启动等待 noVNC 就绪，修复卡 starting；5.打开方式显示通用版名称。",
+          "updated_at": "2026-10-26T22:35:00Z",
+          "packages": {
+            "x86": {
+              "download_url": "https://github.com/j353719624/office-docs-wps-universal/releases/download/v0.2.5/trim.docs.wps_universal_0.2.5_x86_64.fpk",
+              "sha256": "97cd3b257898d2eafc1c65bf991481cd40a7be70461140c0775d437ff91c81b4",
+              "size": 968884586
+            }
+          },
+          "os_min_version": "1.2.0"
+        }
+      },
+      "service_port": "10602",
+      "run_as": "root",
+      "install_type": "root",
+      "maintainer": "开发者",
+      "maintainer_url": "https://linux.wps.cn/"
     }
   }
 }

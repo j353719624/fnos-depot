@@ -208,6 +208,8 @@ def cmd_add_release(args) -> None:
         "updated_at": now_iso(),
         "packages": packages,
     }
+    if args.os_min_version:
+        app["releases"][args.version]["os_min_version"] = args.os_min_version
     save_fnpack(data)
     print(f"已写入 {args.app} {args.version}：{'/'.join(packages)}")
     if args.url_prefix:
@@ -355,6 +357,7 @@ def main() -> None:
     p.add_argument("--tag", help="GitHub Releases 标签，默认今天（YYYY.M.D）")
     p.add_argument("--url-prefix", help="覆盖下载地址前缀（fpk 托管在任意仓库/站点时使用）")
     p.add_argument("--changelog", help="更新说明")
+    p.add_argument("--os-min-version", help="最低 fnOS 系统版本，如 1.1.3107")
     p.add_argument("--sha256", help="URL 方式手工提供的 sha256")
     p.add_argument("--size", type=int, help="URL 方式手工提供的文件大小（字节）")
     p.add_argument("--fetch", action="store_true", help="下载 URL 内容自动计算 sha256 与 size")
