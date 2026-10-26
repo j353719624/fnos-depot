@@ -24,8 +24,10 @@ ROOT = Path(__file__).resolve().parent.parent
 FNPACK_PATH = ROOT / "fnpack.json"
 README_PATH = ROOT / "README.md"
 
-FIXED_CATEGORIES = ["AI赋能", "影音娱乐", "教育学习", "智能智控", "游戏地带", "生活服务", "系统工具", "编程开发"]
+FIXED_CATEGORIES = ["影音娱乐", "系统工具", "编程开发", "AI赋能", "生活服务", "智能智控", "教育学习", "游戏地带", "硬件驱动"]
 PLATFORMS = {"x86", "arm", "all"}
+RUN_AS_VALUES = {"package", "root"}
+INSTALL_TYPE_VALUES = {"", "root"}
 GROUP_LETTERS = [("A–F", "abcdef"), ("G–L", "ghijkl"), ("M–R", "mnopqr"), ("S–Z", "stuvwxyz")]
 
 try:
@@ -109,6 +111,14 @@ def cmd_add_app(args) -> None:
     for c in cats:
         if c not in FIXED_CATEGORIES:
             sys.exit(f"错误：分类 {c} 不在固定分类中：{'、'.join(FIXED_CATEGORIES)}")
+    if len(cats) > 2:
+        sys.exit("错误：分类最多填 2 个，第一个为主分类")
+    platforms = [p.strip() for p in args.platform.split(",") if p.strip()]
+    for p in platforms:
+        if p not in PLATFORMS:
+            sys.exit(f"错误：platform 只允许 all/x86/arm，收到 {p}")
+    if args.run_as and args.run_as not in RUN_AS_VALUES:
+        sys.exit(f"错误：run_as 只允许 package 或 root，收到 {args.run_as}")
 
     app_dir = ROOT / app_id
     (app_dir / "Preview").mkdir(parents=True, exist_ok=True)
@@ -127,7 +137,7 @@ def cmd_add_app(args) -> None:
     entry = {
         "display_name": args.name or app_id,
         "desc": args.desc or "",
-        "platform": ["x86", "arm"],
+        "platform": platforms or ["x86", "arm"],
         "categories": cats or ["系统工具"],
         "icon_url": f"{app_id}/ICON.PNG",
         "preview_urls": [f"{app_id}/Preview/1.png"],
@@ -140,6 +150,10 @@ def cmd_add_app(args) -> None:
         entry["service_port"] = args.port
     if args.run_as:
         entry["run_as"] = args.run_as
+    if args.install_type is not None:
+        if args.install_type not in INSTALL_TYPE_VALUES:
+            sys.exit("错误：install_type 只允许空字符串（存储空间）或 root（系统空间）")
+        entry["install_type"] = args.install_type
     if args.maintainer:
         entry["maintainer"] = args.maintainer
         entry["maintainer_url"] = args.maintainer_url or ""
@@ -169,12 +183,14 @@ def cmd_add_release(args) -> None:
         p = Path(src)
         if p.is_file():
             sha, size = hash_file(p)
-            if owner_repo:
-                url = f"https://github.com/{owner_repo[0]}/{owner_repo[1]}/releases/download/{tag}/{p.name}"
+            if args.url_prefix:
+                base = args.url_prefix.rstrip("/")
+            elif owner_repo:
+                base = f"https://github.com/{owner_repo[0]}/{owner_repo[1]}/releases/download/{tag}"
             else:
-                url = ""
-                print("警告：source_info.homepage 未指向 GitHub 仓库，download_url 置空，稍后需手工补上")
-            packages[arch] = {"download_url": url, "sha256": sha, "size": size}
+                base = ""
+                print("警告：未提供 --url-prefix 且 homepage 未指向 GitHub 仓库，download_url 置空待补")
+            packages[arch] = {"download_url": f"{base}/{p.name}", "sha256": sha, "size": size}
         elif src.startswith(("http://", "https://")):
             if args.fetch:
                 print(f"正在下载以计算校验值（{arch}）：{src}")
@@ -193,9 +209,12 @@ def cmd_add_release(args) -> None:
         "packages": packages,
     }
     save_fnpack(data)
-    print(f"已写入 {args.app} {args.version}（Releases 标签 {tag}）：{'/'.join(packages)}")
-    if owner_repo:
-        print(f"下一步：把 fpk 上传到该标签 → 网页 https://github.com/{owner_repo[0]}/{owner_repo[1]}/releases/new?tag={tag}")
+    print(f"已写入 {args.app} {args.version}：{'/'.join(packages)}")
+    if args.url_prefix:
+        print(f"下载地址前缀：{args.url_prefix}")
+    elif owner_repo:
+        print(f"下一步：把 fpk 上传到 Releases 标签 {tag}")
+        print(f"      网页 https://github.com/{owner_repo[0]}/{owner_repo[1]}/releases/new?tag={tag}")
         print(f"      或命令行：gh release create {tag} dist/*.fpk --title \"{tag}\"")
 
 
@@ -213,6 +232,14 @@ def cmd_validate(_args) -> None:
         for c in app.get("categories", []):
             if c not in FIXED_CATEGORIES:
                 errors.append(pre + f"非法分类：{c}")
+        if len(app.get("categories", [])) > 2:
+            errors.append(pre + "分类最多 2 个")
+        run_as = app.get("run_as")
+        if run_as not in (None, "") and run_as not in RUN_AS_VALUES:
+            errors.append(pre + f"run_as 只允许 package/root，收到 {run_as}")
+        inst = app.get("install_type")
+        if inst not in (None, "") and inst not in INSTALL_TYPE_VALUES:
+            errors.append(pre + f"install_type 只允许空串/root，收到 {inst}")
         icon_url = app.get("icon_url")
         if icon_url and not (ROOT / icon_url).is_file():
             errors.append(pre + f"图标不存在：{icon_url}")
@@ -306,12 +333,14 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("add-app", help="新建应用：生成目录骨架并写入 fnpack.json")
-    p.add_argument("app", help="应用包名（同时是目录名），如 hello-world")
+    p.add_argument("app", help="应用包名（须与 fpk 内 manifest 的 appname 一致）")
     p.add_argument("--name", help="显示名")
     p.add_argument("--desc", help="描述（建议带一个 emoji 开头）")
-    p.add_argument("--cat", action="append", default=[], help="分类，可多次提供；默认 系统工具")
+    p.add_argument("--cat", action="append", default=[], help="分类，最多 2 个；默认 系统工具")
+    p.add_argument("--platform", help="支持架构，逗号分隔，如 x86 / x86,arm / all；默认 x86,arm")
     p.add_argument("--port", help="服务端口")
-    p.add_argument("--run-as", help="运行用户，如 root")
+    p.add_argument("--run-as", help="运行用户：package 或 root")
+    p.add_argument("--install-type", help="安装位置：空为存储空间，root 为系统空间")
     p.add_argument("--docker", action="store_true", help="标记为 Docker 重新打包")
     p.add_argument("--maintainer", help="上游原作者/项目名")
     p.add_argument("--maintainer-url", help="上游项目主页")
@@ -324,6 +353,7 @@ def main() -> None:
     p.add_argument("--x86", help="x86 架构 fpk 的本地路径或 URL")
     p.add_argument("--arm", help="arm 架构 fpk 的本地路径或 URL")
     p.add_argument("--tag", help="GitHub Releases 标签，默认今天（YYYY.M.D）")
+    p.add_argument("--url-prefix", help="覆盖下载地址前缀（fpk 托管在任意仓库/站点时使用）")
     p.add_argument("--changelog", help="更新说明")
     p.add_argument("--sha256", help="URL 方式手工提供的 sha256")
     p.add_argument("--size", type=int, help="URL 方式手工提供的文件大小（字节）")

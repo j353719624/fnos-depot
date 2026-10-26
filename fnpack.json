@@ -6,5 +6,39 @@
     "homepage": "https://github.com/j353719624/fnos-depot",
     "description": "个人飞牛OS应用源，原生fpk打包，支持 x86、arm 双版本。"
   },
-  "apps": {}
+  "apps": {
+    "mercury": {
+      "display_name": "MERCURY",
+      "desc": "MERCURY 是运行在 fnOS 上的交换机集中管理应用。通过 fnOS 即可对家庭与中小企业网络中的交换机进行设备发现、状态监控、配置下发与诊断运维，让 NAS 成为整张网络的管理入口。",
+      "platform": [
+        "x86"
+      ],
+      "categories": [
+        "智能智控"
+      ],
+      "icon_url": "mercury/ICON.PNG",
+      "preview_urls": [
+        "mercury/Preview/1.png"
+      ],
+      "readme_url": "mercury/README.md",
+      "releases": {
+        "V1.5.1-261026": {
+          "changelog": "更换应用图标（霓虹交换机 / 飞牛版），包含应用中心、桌面入口与页面 Logo；功能与上一版一致。",
+          "updated_at": "2026-10-26T22:25:04Z",
+          "packages": {
+            "x86": {
+              "download_url": "https://github.com/j353719624/mercury-fnos/releases/download/v1.5.1-261026/MERCURY-V1.5.1-261026.fpk",
+              "sha256": "ccf2d7a1136d0ee2cb6f2ac8dccb368f5ddbfcd37e19d7c3b2abd249c67da056",
+              "size": 39497003
+            }
+          }
+        }
+      },
+      "service_port": "55556",
+      "run_as": "root",
+      "install_type": "root",
+      "maintainer": "Lunn",
+      "maintainer_url": "https://github.com/j353719624/mercury-fnos"
+    }
+  }
 }
