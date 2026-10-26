@@ -1,0 +1,10 @@
+{
+  "schema_version": "2",
+  "source_info": {
+    "name": "j353719624的应用源",
+    "author": "j353719624",
+    "homepage": "https://github.com/j353719624/fnos-depot",
+    "description": "个人飞牛OS应用源，原生fpk打包，支持 x86、arm 双版本。"
+  },
+  "apps": {}
+}
